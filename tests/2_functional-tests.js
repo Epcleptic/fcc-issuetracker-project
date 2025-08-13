@@ -2,6 +2,7 @@ const chaiHttp = require("chai-http");
 const chai = require("chai");
 const assert = chai.assert;
 const server = require("../server");
+const issue = require("../issue");
 
 chai.use(chaiHttp);
 
@@ -12,14 +13,14 @@ suite("Functional Tests", function () {
       .keepOpen()
       .post("/api/issues/apitest")
       .send({
-        issue_title: "Title",
+        issue_title: "Testing 123",
         issue_text: "Text",
         created_by: "Person",
         assigned_to: "Other person",
         status_text: "Open",
       })
       .end(function (err, res) {
-        assert.equal(res.status, 200);
+        assert.equal(res.body.issue_title, "Testing 123");
         done();
       });
   });
@@ -29,12 +30,12 @@ suite("Functional Tests", function () {
       .keepOpen()
       .post("/api/issues/apitest")
       .send({
-        issue_title: "Title",
+        issue_title: "Testing 1234",
         issue_text: "Text",
         created_by: "Person",
       })
       .end(function (err, res) {
-        assert.equal(res.status, 200);
+        assert.equal(res.body.issue_title, "Testing 1234");
         done();
       });
   });
@@ -48,7 +49,7 @@ suite("Functional Tests", function () {
         issue_text: "Text",
       })
       .end(function (err, res) {
-        assert.equal(res.status, 400);
+        assert.equal(res.body.error, "required field(s) missing");
         done();
       });
   });
@@ -119,7 +120,7 @@ suite("Functional Tests", function () {
         issue_title: "Updated title",
       })
       .end(function (err, res) {
-        assert.equal(res.status, 200);
+        assert.equal(res.body.result, "successfully updated");
         done();
       });
   });
@@ -134,7 +135,7 @@ suite("Functional Tests", function () {
         open: false,
       })
       .end(function (err, res) {
-        assert.equal(res.status, 200);
+        assert.equal(res.body.result, "successfully updated");
         done();
       });
   });
@@ -148,7 +149,7 @@ suite("Functional Tests", function () {
         open: false,
       })
       .end(function (err, res) {
-        assert.equal(res.status, 400);
+        assert.equal(res.body.error, "missing _id");
         done();
       });
   });
@@ -161,7 +162,7 @@ suite("Functional Tests", function () {
         _id: "689cb071a9364c27d0e28dec",
       })
       .end(function (err, res) {
-        assert.equal(res.status, 200);
+        assert.equal(res.body.error, "no update field(s) sent");
         done();
       });
   });
@@ -172,9 +173,10 @@ suite("Functional Tests", function () {
       .put("/api/issues/apitest")
       .send({
         _id: "689cb071a9364c27d0e28ded",
+        issue_title: "Updated title",
       })
       .end(function (err, res) {
-        assert.equal(res.status, 400);
+        assert.equal(res.body.error, "could not update");
         done();
       });
   });
@@ -203,7 +205,7 @@ suite("Functional Tests", function () {
             _id: idToDelete,
           })
           .end(function (err, res) {
-            assert.equal(res.status, 200);
+            assert.equal(res.body.result, "successfully deleted");
           });
         done();
       });
@@ -217,7 +219,7 @@ suite("Functional Tests", function () {
         _id: "689cb01a32f8ce673cf357dc",
       })
       .end(function (err, res) {
-        assert.equal(res.status, 400);
+        assert.equal(res.body.error, "could not delete");
         done();
       });
   });
@@ -228,7 +230,7 @@ suite("Functional Tests", function () {
       .delete("/api/issues/apitest")
       .send({})
       .end(function (err, res) {
-        assert.equal(res.status, 400);
+        assert.equal(res.body.error, "missing _id");
         done();
       });
   });

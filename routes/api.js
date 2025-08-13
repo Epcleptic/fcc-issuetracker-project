@@ -21,7 +21,7 @@ module.exports = function (app) {
 
     .post(async function (req, res) {
       const project = req.params.project;
-      let { issue_title, issue_text, created_by, assigned_to, status_text } =
+      const { issue_title, issue_text, created_by, assigned_to, status_text } =
         req.body;
 
       if (!issue_title || !issue_text || !created_by) {
@@ -45,11 +45,30 @@ module.exports = function (app) {
       }
     })
 
-    .put(function (req, res) {
-      let project = req.params.project;
+    .put(async function (req, res) {
+      let { _id, ...update } = req.body;
+      if (!_id || !(await Issue.findById(_id))) {
+        res.sendStatus(400);
+        return;
+      }
+
+      //   Credits: https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
+      update = Object.fromEntries(
+        Object.entries(update).filter(([_, v]) => v != "")
+      );
+
+      await Issue.findOneAndUpdate({ _id }, update);
+      res.sendStatus(200);
     })
 
-    .delete(function (req, res) {
-      let project = req.params.project;
+    .delete(async function (req, res) {
+      const { _id } = req.body;
+      if (!_id || !(await Issue.findById(_id))) {
+        res.sendStatus(400);
+        return;
+      }
+
+      await Issue.deleteOne({ _id });
+      res.sendStatus(200);
     });
 };

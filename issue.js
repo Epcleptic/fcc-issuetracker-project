@@ -24,7 +24,7 @@ module.exports = function () {
       required: true,
     },
     assigned_to: String,
-    favoriteFoods: String,
+    status_text: String,
     open: Boolean,
     created_on: Date,
     updated_on: Date,
